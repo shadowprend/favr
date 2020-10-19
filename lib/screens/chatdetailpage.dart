@@ -1,12 +1,12 @@
-import 'package:favr/models/chat_message.dart';
+import 'package:favr/chatblocs/chat_block.dart';
 import 'package:favr/utilities/constant.dart';
 import 'package:favr/widgets/chat_bubble.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
-enum MessageType {
+enum MessageType2 {
   Sender,
   Receiver,
 }
@@ -16,19 +16,20 @@ class ChatDetailPage extends StatefulWidget {
   final String name;
   final String details;
   final String receiver;
-  ChatDetailPage({this.name, this.details, this.receiver});
+  final String conversationID;
+  ChatDetailPage({this.name, this.details, this.receiver, this.conversationID});
 
   @override
   _ChatDetailPageState createState() => _ChatDetailPageState();
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
-  final _firestore = FirebaseFirestore.instance;
   final messageTextController = TextEditingController();
-  final _auth = auth.FirebaseAuth.instance;
-  var now = new DateTime.now();
+  final CollectionReference _postCollection = FirebaseFirestore.instance.collection('messages');
+  final _firestore = FirebaseFirestore.instance;
   String _messageText;
-  List<ChatMessage> chatMessage = [];
+  ChatBloc _dataBloc = ChatBloc();
+  final _auth = auth.FirebaseAuth.instance;
 
   auth.User loggedInUser;
 
@@ -43,11 +44,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     }
   }
 
+
   @override
   void initState() {
     super.initState();
+    _dataBloc.add(ChatEventStart(widget.conversationID));
     getCurrentUser();
-    // print(conversation());
   }
 
   @override
@@ -113,51 +115,41 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       ),
       body: Stack(
         children: <Widget>[
-          StreamBuilder(
-              stream: _firestore
-                  .collection('messagetest')
-                  .doc('176CNuky6begL9udum8A')
-                  .collection('conversation')
-                  .orderBy('time', descending: false)
-                  .snapshots(),
+          BlocBuilder<ChatBloc, ChatState>(
+              cubit: _dataBloc,
               // ignore: missing_return
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final _messages = snapshot.data.docs.reversed;
-
-                  List<ChatMessage> chatMessage = [];
-                  for (var message in _messages) {
-                    var messagetype = MessageType.Receiver;
-                    final messageText = message.data()['message'];
-                    final messageSender = message.data()['user'];
-
-                    if (messageSender == loggedInUser.uid) {
-                      messagetype = MessageType.Sender;
-                    }
-                    var data =
-                        ChatMessage(message: messageText, type: messagetype);
-                    chatMessage.add(data);
-                  }
-
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 100.0),
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: chatMessage.length,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return ChatBubble(
-                          chatMessage: chatMessage[index],
+              builder: (BuildContext context, ChatState state) {
+                if (state is DataStateLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is DataStateEmpty) {
+                  return Center(
+                    child: Text('No Posts', style: Theme.of(context).textTheme.bodyText1,),
+                  );
+                } else if (state is DataStateLoadSuccess) {
+                  return ListView.builder(
+                    padding: EdgeInsets.fromLTRB(15, 10, 15, 120),
+                    reverse: true,
+                    itemCount: state.hasMoreData ? state.posts.length + 1 : state.posts.length,
+                    itemBuilder: (context, i) {
+                      if (i >= state.posts.length) {
+                        _dataBloc.add(ChatEventFetchMore(widget.conversationID));
+                        return Container(
+                          margin: EdgeInsets.only(top: 15),
+                          height: 30,
+                          width: 30,
+                          child: Center(child: Text('No more Post')),
                         );
-                      },
-                    ),
+                      }
+                      return ChatBubble(
+                        chatMessage: state.posts[i],
+                      );
+                    },
                   );
                 }
-
-                return Container();
-              }),
+              }
+          ),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -191,18 +183,31 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             child: Container(
               padding: EdgeInsets.only(right: 30, bottom: 50),
               child: FloatingActionButton(
-                onPressed: () {
+                onPressed: () async {
                   messageTextController.clear();
-                  _firestore
-                      .collection('messagetest')
-                      .doc('176CNuky6begL9udum8A')
-                      .collection('conversation')
-                      .add({
-                    'user': loggedInUser.uid,
-                    'hasread': false,
-                    'message': _messageText,
-                    'time': FieldValue.serverTimestamp(),
-                  });
+                  try{
+                    var chatlength = await _firestore.collection('messages').doc(widget.conversationID).collection('conversation').orderBy('time', descending: false).get();
+                    var getLastDoc = await _firestore.collection('messages').doc(widget.conversationID).collection('conversation').limit(1).orderBy('time', descending: false).get();
+                    if(chatlength.docs.length >= chatLimit){
+                      for(var s in getLastDoc.docs){
+                        var docID = s.id;
+                        print(docID);
+                        _firestore.collection('messages').doc(widget.conversationID).collection('conversation').doc(docID).delete();
+                      }
+                    }
+                    if(_messageText.isNotEmpty){
+                      _firestore.collection('messages').doc(widget.conversationID).collection('conversation').add({
+                        'user': loggedInUser.uid,
+                        'hasread': false,
+                        'message': _messageText,
+                        'time': FieldValue.serverTimestamp(),
+                      });
+
+                      print(chatlength.docs.length);
+                    }
+                  }catch(e){
+                    // TODO: Add SnackBar here.
+                  }
                 },
                 child: Icon(
                   Icons.send,

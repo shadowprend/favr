@@ -6,12 +6,10 @@ class UserData {
   final _firestore = FirebaseFirestore.instance;
   Future<bool> isUserDataExist() async {
     var docRef = await _firestore.collection("userdata").doc(_userID()).get();
-
     if (docRef.exists) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   String _userID() {
@@ -19,7 +17,7 @@ class UserData {
     return user.uid;
   }
 
-  void updateUserData(data) async {
+  void updateUserData(var data) async {
     var isExist = await isUserDataExist();
     final CollectionReference postsRef = _firestore.collection("userdata");
     if (!isExist) {
