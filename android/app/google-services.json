@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "889637770736",
+    "firebase_url": "https://favr-4cd47.firebaseio.com",
+    "project_id": "favr-4cd47",
+    "storage_bucket": "favr-4cd47.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889637770736:android:d8c9eda081c739e05e3935",
+        "android_client_info": {
+          "package_name": "com.app.favr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889637770736-g39te3i4ejglnagt34h4lgllektko0b0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.favr",
+            "certificate_hash": "556598c7e19b3c5591c769e06e9fea0d21aef725"
+          }
+        },
+        {
+          "client_id": "889637770736-l9fhgp9eqrch2u85b116211msrdlvr5e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXPbg5K0LPGRmk38N2pNZB7Od7cc1Cc2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889637770736-l9fhgp9eqrch2u85b116211msrdlvr5e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
