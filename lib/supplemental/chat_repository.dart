@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:favr/utilities/components/contants.dart';
 import 'package:favr/utilities/constant.dart';
 
 class ChatRepository {
@@ -11,7 +12,8 @@ class ChatRepository {
   // static ChatRepository get instance => _instance;
 
   // Instance
-  final CollectionReference _postCollection = FirebaseFirestore.instance.collection('messages');
+  final CollectionReference _postCollection =
+      FirebaseFirestore.instance.collection('messages');
 
   Stream<QuerySnapshot> getPosts() {
     return _postCollection

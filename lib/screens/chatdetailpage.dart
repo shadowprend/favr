@@ -1,4 +1,5 @@
 import 'package:favr/chatblocs/chat_block.dart';
+import 'package:favr/utilities/components/contants.dart';
 import 'package:favr/utilities/constant.dart';
 import 'package:favr/widgets/chat_bubble.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,8 @@ class ChatDetailPage extends StatefulWidget {
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final messageTextController = TextEditingController();
-  final CollectionReference _postCollection = FirebaseFirestore.instance.collection('messages');
+  final CollectionReference _postCollection =
+      FirebaseFirestore.instance.collection('messages');
   final _firestore = FirebaseFirestore.instance;
   String _messageText;
   ChatBloc _dataBloc = ChatBloc();
@@ -43,7 +45,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       print(e);
     }
   }
-
 
   @override
   void initState() {
@@ -125,16 +126,22 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   );
                 } else if (state is DataStateEmpty) {
                   return Center(
-                    child: Text('No Posts', style: Theme.of(context).textTheme.bodyText1,),
+                    child: Text(
+                      'No Posts',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
                   );
                 } else if (state is DataStateLoadSuccess) {
                   return ListView.builder(
                     padding: EdgeInsets.fromLTRB(15, 10, 15, 120),
                     reverse: true,
-                    itemCount: state.hasMoreData ? state.posts.length + 1 : state.posts.length,
+                    itemCount: state.hasMoreData
+                        ? state.posts.length + 1
+                        : state.posts.length,
                     itemBuilder: (context, i) {
                       if (i >= state.posts.length) {
-                        _dataBloc.add(ChatEventFetchMore(widget.conversationID));
+                        _dataBloc
+                            .add(ChatEventFetchMore(widget.conversationID));
                         return Container(
                           margin: EdgeInsets.only(top: 15),
                           height: 30,
@@ -148,8 +155,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     },
                   );
                 }
-              }
-          ),
+              }),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -185,18 +191,38 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               child: FloatingActionButton(
                 onPressed: () async {
                   messageTextController.clear();
-                  try{
-                    var chatlength = await _firestore.collection('messages').doc(widget.conversationID).collection('conversation').orderBy('time', descending: false).get();
-                    var getLastDoc = await _firestore.collection('messages').doc(widget.conversationID).collection('conversation').limit(1).orderBy('time', descending: false).get();
-                    if(chatlength.docs.length >= chatLimit){
-                      for(var s in getLastDoc.docs){
+                  try {
+                    var chatlength = await _firestore
+                        .collection('messages')
+                        .doc(widget.conversationID)
+                        .collection('conversation')
+                        .orderBy('time', descending: false)
+                        .get();
+                    var getLastDoc = await _firestore
+                        .collection('messages')
+                        .doc(widget.conversationID)
+                        .collection('conversation')
+                        .limit(1)
+                        .orderBy('time', descending: false)
+                        .get();
+                    if (chatlength.docs.length >= chatLimit) {
+                      for (var s in getLastDoc.docs) {
                         var docID = s.id;
                         print(docID);
-                        _firestore.collection('messages').doc(widget.conversationID).collection('conversation').doc(docID).delete();
+                        _firestore
+                            .collection('messages')
+                            .doc(widget.conversationID)
+                            .collection('conversation')
+                            .doc(docID)
+                            .delete();
                       }
                     }
-                    if(_messageText.isNotEmpty){
-                      _firestore.collection('messages').doc(widget.conversationID).collection('conversation').add({
+                    if (_messageText.isNotEmpty) {
+                      _firestore
+                          .collection('messages')
+                          .doc(widget.conversationID)
+                          .collection('conversation')
+                          .add({
                         'user': loggedInUser.uid,
                         'hasread': false,
                         'message': _messageText,
@@ -205,7 +231,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
                       print(chatlength.docs.length);
                     }
-                  }catch(e){
+                  } catch (e) {
                     // TODO: Add SnackBar here.
                   }
                 },
