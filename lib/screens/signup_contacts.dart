@@ -40,6 +40,12 @@ class SignUpContacts extends StatelessWidget {
                   children: <Widget>[
                     TextFormField(
                       controller: phoneNumber,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Please enter mobile number";
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter Your Mobile Number',
                         labelText: 'Mobile Number *',
@@ -57,7 +63,7 @@ class SignUpContacts extends StatelessWidget {
                           if (_formKey.currentState.validate()) {
                             userDetails['phonenumber'] =
                                 int.parse(phoneNumber.text);
-                            registerUser(phoneNumber.text, context);
+                            phoneverification(phoneNumber.text, context);
                           } else {
                             print('valid');
                           }
@@ -75,7 +81,7 @@ class SignUpContacts extends StatelessWidget {
     );
   }
 
-  Future registerUser(String mobile, BuildContext context) async {
+  Future phoneverification(String mobile, BuildContext context) async {
     final PhoneVerificationCompleted verificationCompleted = (user) {
       print(
           'Inside _sendCodeToPhoneNumber: signInWithPhoneNumber auto succeeded: $user');
@@ -91,7 +97,7 @@ class SignUpContacts extends StatelessWidget {
       //show dialog to take input from the user
       showDialog(
           context: context,
-          barrierDismissible: false,
+          barrierDismissible: true,
           builder: (context) => AlertDialog(
                 title: Text("Enter SMS Code"),
                 content: Column(
