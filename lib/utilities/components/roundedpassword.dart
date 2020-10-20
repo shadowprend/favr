@@ -22,7 +22,7 @@ class RoundedPasswordField extends StatelessWidget {
         obscureText: true,
         validator: (value) {
           if (value.isEmpty) {
-            return 'Please type an email';
+            return 'Please type an password';
           }
           return null;
         },
