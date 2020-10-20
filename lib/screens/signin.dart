@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:favr/screens/location.dart';
 import 'package:favr/screens/servicer_dashboard.dart';
 import 'package:favr/screens/signup_contacts.dart';
+import 'package:favr/screens/signup_email.dart';
 import 'package:favr/utilities/components/roundedbutton.dart';
 import 'package:favr/utilities/components/roundedinputfield.dart';
 import 'package:favr/utilities/components/roundedpassword.dart';
@@ -145,7 +146,7 @@ class _SignInState extends State<SignIn> {
                                 print(e);
                               }
                             } else {
-                              showInSnackBar('Isnvalid');
+                              showInSnackBar('Invalid');
                             }
                           },
                         ),
@@ -215,16 +216,8 @@ class _SignInState extends State<SignIn> {
 
                                       userdata.updateUserData(userinfo);
 
-                                      // bool _isLocationServiceEnabled =
-                                      //     await isLocationServiceEnabled();
                                       Navigator.pushNamed(
                                           context, LocationScreen.id);
-
-                                      // LocationPermission permission =
-                                      //     await checkPermission();
-                                      // if (permission == true) {
-                                      //   Navigator.pushNamed(context, Dashboard.id);
-                                      // }
 
                                       _firestore
                                           .collection("userdata")
