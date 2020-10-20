@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:favr/models/userdata.dart';
+import 'package:favr/screens/location.dart';
 import 'package:flutter/material.dart';
 import 'package:favr/utilities/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,7 +13,7 @@ class SignupPassword extends StatelessWidget {
   final _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   final password = TextEditingController();
-
+  UserData userData;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +38,12 @@ class SignupPassword extends StatelessWidget {
                   children: <Widget>[
                     TextFormField(
                       controller: password,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Please Enter your Password";
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter Your Password',
                         labelText: 'Password *',
@@ -55,14 +64,45 @@ class SignupPassword extends StatelessWidget {
                             userDetails['password'] = password.text;
                             try {
                               print(userDetails);
-                              final newUser =
-                                  await _auth.createUserWithEmailAndPassword(
-                                      email: userDetails['email'],
-                                      password: userDetails['password']);
-                              if (newUser != null) {
-                                print('Yeah');
-                                Navigator.pushNamed(context, Dashboard.id);
-                              }
+                              EmailAuthCredential _credential;
+                              _credential = EmailAuthProvider.credential(
+                                  email: userDetails['email'],
+                                  password: userDetails['password']);
+                              _auth.signInWithCredential(_credential);
+                              var data = {
+                                'firstname': userDetails['firstName'],
+                                'lastname': userDetails['lastName'],
+                                'phonenumber': userDetails['phonenumber'],
+                                'email': userDetails['email'],
+                                'password': userDetails['password'],
+                                'longlat': 'none',
+                                'cityslug': 'none',
+                                "full address": 'none',
+                                "location": 'none',
+                              };
+
+                              FirebaseFirestore _firestore =
+                                  FirebaseFirestore.instance;
+                              final CollectionReference postsRef =
+                                  _firestore.collection("userdata");
+
+                              await postsRef
+                                  .doc(_auth.currentUser.uid)
+                                  .set(data);
+                              print(data);
+
+                              Navigator.pushNamed(context, LocationScreen.id);
+
+                              // final newUser =
+                              //     await _auth.createUserWithEmailAndPassword(
+                              //         email: userDetails['email'],
+                              //         password: userDetails['password']);
+
+                              // if (newUser != null) {
+                              //   print('Yeah');
+
+                              //   Navigator.pushNamed(context, Dashboard.id);
+                              // }
                             } catch (e) {
                               print(e);
                             }

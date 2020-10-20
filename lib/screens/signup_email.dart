@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:favr/models/userdata.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:favr/utilities/constant.dart';
@@ -10,6 +13,9 @@ class SignUpEmail extends StatelessWidget {
 
   final _formKey = GlobalKey<FormState>();
   final emailAddress = TextEditingController();
+  UserData userdata;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +42,12 @@ class SignUpEmail extends StatelessWidget {
                     TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       controller: emailAddress,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Please Enter your Email";
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter Your Email Address',
                         labelText: 'Email Address *',
@@ -54,7 +66,6 @@ class SignUpEmail extends StatelessWidget {
                           if (_formKey.currentState.validate()) {
                             userDetails['email'] = emailAddress.text;
 
-//
                             Navigator.push(
                               context,
                               MaterialPageRoute(

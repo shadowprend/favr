@@ -1,5 +1,5 @@
 import 'package:favr/chatblocs/chat_block.dart';
-import 'package:favr/widgets/chat_bubble.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,43 +31,45 @@ class _LazyListScreenState extends State<LazyListScreen> {
       appBar: AppBar(
         title: Text('Posts'),
       ),
-
       body: Stack(
         children: <Widget>[
           BlocBuilder<ChatBloc, ChatState>(
-          cubit: _dataBloc,
-          // ignore: missing_return
-          builder: (BuildContext context, ChatState state) {
-      if (state is DataStateLoading) {
-        return Center(
-       child: CircularProgressIndicator(),
-       );
-      } else if (state is DataStateEmpty) {
-      return Center(
-      child: Text('No Posts', style: Theme.of(context).textTheme.bodyText1,),
-      );
-      } else if (state is DataStateLoadSuccess) {
-      return ListView.builder(
-      padding: EdgeInsets.fromLTRB(15, 10, 15, 0), reverse: true,
-      itemCount: state.hasMoreData ? state.posts.length + 1 : state.posts.length,
-      itemBuilder: (context, i) {
-      if (i >= state.posts.length) {
-      _dataBloc.add(ChatEventFetchMore(widget.conversationID));
-      return Container(
-      margin: EdgeInsets.only(top: 15),
-      height: 30,
-      width: 30,
-      child: Center(child: Text('No more Post')),
-      );
-      }
-      return ChatBubble(
-        chatMessage: state.posts[i],
-      );
-      },
-      );
-      }
-      }
-      ),
+              cubit: _dataBloc,
+              // ignore: missing_return
+              builder: (BuildContext context, ChatState state) {
+                if (state is DataStateLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is DataStateEmpty) {
+                  return Center(
+                    child: Text(
+                      'No Posts',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  );
+                } else if (state is DataStateLoadSuccess) {
+                  return ListView.builder(
+                    padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
+                    reverse: true,
+                    itemCount: state.hasMoreData
+                        ? state.posts.length + 1
+                        : state.posts.length,
+                    itemBuilder: (context, i) {
+                      if (i >= state.posts.length) {
+                        _dataBloc
+                            .add(ChatEventFetchMore(widget.conversationID));
+                        return Container(
+                          margin: EdgeInsets.only(top: 15),
+                          height: 30,
+                          width: 30,
+                          child: Center(child: Text('No more Post')),
+                        );
+                      }
+                    },
+                  );
+                }
+              }),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -127,5 +129,4 @@ class _LazyListScreenState extends State<LazyListScreen> {
     _dataBloc.close();
     super.dispose();
   }
-
 }

@@ -1,3 +1,5 @@
+import 'package:favr/models/userdata.dart';
+import 'package:favr/screens/signup_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:favr/utilities/constant.dart';
@@ -11,7 +13,7 @@ class SignUpName extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final firstName = TextEditingController();
   final lastName = TextEditingController();
-
+  UserData userdata;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +41,12 @@ class SignUpName extends StatelessWidget {
                         Flexible(
                           child: TextFormField(
                             controller: firstName,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return "Please Enter First name";
+                              }
+                              return null;
+                            },
                             decoration: InputDecoration(
                               hintText: 'Enter Your First Name',
                               labelText: 'First Name *',
@@ -68,6 +76,7 @@ class SignUpName extends StatelessWidget {
                           if (_formKey.currentState.validate()) {
                             userDetails['firstName'] = firstName.text;
                             userDetails['lastName'] = lastName.text;
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(

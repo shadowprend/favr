@@ -48,6 +48,16 @@ class _ServiceContacts extends State<ServiceContacts> {
     }
   }
 
+  Future<void> readLoacationData() async {
+    var query = await FirebaseFirestore.instance
+        .collection("contacts")
+        .doc()
+        .snapshots();
+    query.forEach((doc) {
+      List<Map<dynamic, dynamic>> values = List.from(doc.data()['services']);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -88,7 +98,7 @@ class _ServiceContacts extends State<ServiceContacts> {
                 ),
               ),
           // orderBy is compulsory to enable pagination
-          query: _firestore.collection('contacts').orderBy('name')),
+          query: _firestore.collection("contacts")),
     );
   }
 }

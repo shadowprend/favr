@@ -1,4 +1,3 @@
-import 'package:favr/widgets/chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:favr/models/search.dart';
@@ -96,15 +95,7 @@ class _ServicerDashboardState extends State<ServicerDashboard> {
                   shrinkWrap: true,
                   padding: EdgeInsets.only(top: 10, bottom: 10),
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return ChatUsersList(
-                        receiver: chatUsers[index].receiver,
-                        text: chatUsers[index].text,
-                        secondaryText: chatUsers[index].secondaryText,
-                        image: chatUsers[index].image,
-                        time: chatUsers[index].time,
-                        isMessageRead: false);
-                  },
+                  itemBuilder: (context, index) {},
                 );
               }),
         ],
