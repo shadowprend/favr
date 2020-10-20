@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:favr/utilities/constant.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:favr/screens/messages.dart';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 var user = _auth.currentUser;
@@ -12,8 +11,15 @@ var name = user.displayName;
 var email = user.email;
 var photo = user.photoURL;
 final FacebookLogin facebookSignIn = FacebookLogin();
+String image(String image) {
+  if (image.isEmpty) {
+    getInitials(name);
+  }
+  return getInitials(name);
+}
 
 class MainDrawer extends StatelessWidget {
+  var i = ";";
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -23,7 +29,9 @@ class MainDrawer extends StatelessWidget {
             currentAccountPicture: CircleAvatar(
               radius: 200,
               backgroundColor: Colors.white,
-              backgroundImage: NetworkImage(photo),
+              backgroundImage: NetworkImage((photo == user.photoURL.isEmpty
+                  ? getInitials(name)
+                  : getInitials(name))),
               child: Text(
                 getInitials(''),
                 style: TextStyle(
@@ -37,13 +45,6 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             title: Text('My Profile'),
             leading: Icon(Icons.person_pin),
-          ),
-          ListTile(
-            title: Text('Messages'),
-            leading: Icon(Icons.message),
-            onTap: () {
-              Navigator.pushNamed(context, Messages.id);
-            },
           ),
           ListTile(
             title: Text('Help Center'),
