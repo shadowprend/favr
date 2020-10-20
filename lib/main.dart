@@ -53,8 +53,8 @@ class MyApp extends StatelessWidget {
       initialRoute: SignIn.id,
       routes: {
         SignUpContacts.id: (context) => SignUpContacts(),
-        SignUpEmail.id: (context) => SignUpEmail(),
         SignUpName.id: (context) => SignUpName(),
+        SignUpEmail.id: (context) => SignUpEmail(),
         SignupPassword.id: (context) => SignupPassword(),
         LocationScreen.id: (context) => LocationScreen(),
         SignIn.id: (context) => SignIn(),
