@@ -1,7 +1,7 @@
 import 'package:favr/chatblocs/chat_block.dart';
 import 'package:favr/utilities/components/contants.dart';
 import 'package:favr/utilities/constant.dart';
-import 'package:favr/widgets/chat_bubble.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,8 +26,7 @@ class ChatDetailPage extends StatefulWidget {
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final messageTextController = TextEditingController();
-  final CollectionReference _postCollection =
-      FirebaseFirestore.instance.collection('messages');
+
   final _firestore = FirebaseFirestore.instance;
   String _messageText;
   ChatBloc _dataBloc = ChatBloc();
@@ -149,9 +148,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           child: Center(child: Text('No more Post')),
                         );
                       }
-                      return ChatBubble(
-                        chatMessage: state.posts[i],
-                      );
                     },
                   );
                 }
